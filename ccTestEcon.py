@@ -25,12 +25,12 @@ url = "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios
 # url = 'https://api.combocurve.com/v1/monthly-productions?skip=0&take=25'
 response = requests.request("GET", url, headers=auth_headers)
 
-dataObjBetter = json.load(response.text)
-econId = dataObjBetter["id"]
+jsonStr = response.text
+dataObjBetter = json.loads(jsonStr)
+row = dataObjBetter[0]
+econId = row["id"]
 
 print(econId)
-
-print(response.json())
 
 
 # dataObj = json.load(jsonStr)
