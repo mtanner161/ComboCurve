@@ -1,3 +1,4 @@
+##File to Clean the Operating Statment via Wolfpak
 import os
 import pandas as pd
 import numpy as np
