@@ -22,8 +22,6 @@ auth_headers = combocurve_auth.get_auth_headers()
 # URl econid
 url = "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios/61a93338b763c20015f3f68f/econ-runs"
 
-# URL get monthly production
-# url = 'https://api.combocurve.com/v1/monthly-productions?skip=0&take=25'
 response = requests.request("GET", url, headers=auth_headers)
 
 jsonStr = response.text
