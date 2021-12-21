@@ -1,3 +1,4 @@
+from types import NoneType
 from combocurve_api_v1 import ServiceAccount, ComboCurveAuth
 import requests
 import numpy as np
@@ -49,23 +50,39 @@ print(len(jsonStr))
 dataObj = json.loads(jsonStr)
 print(dataObj)
 
+# create temp varible with dataObj
 temp = dataObj[0]
-temp2 = temp["output"]
+temp2 = temp["output"]  # extract output
+
+df = pd.json_normalize(response.json())
+df = df.transpose()
+dfNP = df.to_numpy()
 
 
+# create file pointer and set to write mode
 fp = open(
     r"C:\Users\MichaelTanner\Documents\code_doc\king\combocurve\ComboCurve\cleanEconOneLiner.csv",
     "w",
 )
 
+# header
 fp.write("Output, Value\n")
 
+# loops through each item in
 for key, value in temp2.items():
-    fred = key + "," + str(value) + "\n"
-    fp.write(fred)
+    if type(value) != str and type(value) != NoneType:
+        if key == "firstDiscountRoi" or key == "irr":
+            fred = key + "," + str(float(value)) + "\n"
+            fp.write(fred)
+        else:
+            fred = key + "," + str(float(value) * 1000) + "\n"
+            fp.write(fred)
+    elif type(value) == NoneType:
+        continue
+    else:
+        fred = key + "," + value + "\n"
 
 fp.close()
 
-
-# df = pd.json_normalize(response.json())
-# df = df.transpose()
+df = pd.json_normalize(response.json())
+df = df.transpose()
