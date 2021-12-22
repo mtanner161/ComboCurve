@@ -9,12 +9,16 @@ import requests
 import json
 import pandas as pd
 from requests.models import Response
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # connect to service account
 service_account = ServiceAccount.from_file(
     ".\king\combocurve\ComboCurve\ext-api-kingoperating2dev-account-key.json\ext-api-kingoperating2dev-account-key.json"
 )
-api_key = "AIzaSyB8nd5sPJJNGwC94XufF4iliqNyDZHGjw8"  # set API Key
+api_key = os.getenv("API_KEY_PASS")  # set API Key from enviroment variable
 # specific Python ComboCurve authentication
 combocurve_auth = ComboCurveAuth(service_account, api_key)
 
@@ -68,9 +72,6 @@ dataObj = json.loads(jsonStr)
 temp = dataObj[0]
 temp2 = temp["output"]  # extract output
 
-# print out type of each to help with parsing to CSV
-for key, value in temp2.items():
-    print(type(value))
 
 # create file pointer and set to write mode
 fp = open(
@@ -96,3 +97,17 @@ for key, value in temp2.items():
 fp.close()  # closes the file pointer and finishes the export to main dir
 
 print("Done")
+
+########################################## Working on passing table to s3 bucket
+########
+
+import boto3 as aws
+from botocore.config import Config
+
+
+s3 = aws.resource("s3")
+for bucket in s3.buckets.all():
+    print(bucket.name)
+
+
+print("yay")
