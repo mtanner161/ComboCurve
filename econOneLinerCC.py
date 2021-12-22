@@ -1,12 +1,16 @@
+## Economoic One Liner ComboCurve (Single Well)
+## Developed by Michael Tanner - King Operating
+
+
+# packages needed
 from types import NoneType
 from combocurve_api_v1 import ServiceAccount, ComboCurveAuth
 import requests
-import numpy as np
 import json
 import pandas as pd
 from requests.models import Response
 
-
+# connect to service account
 service_account = ServiceAccount.from_file(
     ".\king\combocurve\ComboCurve\ext-api-kingoperating2dev-account-key.json\ext-api-kingoperating2dev-account-key.json"
 )
@@ -43,7 +47,7 @@ print(econId)  # check that varaible is passed correctly
 
 # Reautenticated client
 auth_headers = combocurve_auth.get_auth_headers()
-# set new url with econRunID, skipping zero
+# set new url with econRunID
 urltwo = (
     "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios/61a93338b763c20015f3f68f/econ-runs/"
     + econId
@@ -52,11 +56,9 @@ urltwo = (
 
 # same as above, parsing as JSON string
 response = requests.request("GET", urltwo, headers=auth_headers)
-jsonStr = response.text
-print(len(jsonStr))
-# print(jsonStr)
+jsonStr = response.text  # loads in string
+# loads JSON str into dataObj
 dataObj = json.loads(jsonStr)
-print(dataObj)
 
 # create temp varible with dataObj
 temp = dataObj[0]
@@ -64,7 +66,7 @@ temp2 = temp["output"]  # extract output
 
 # print out type of each to help with parsing to CSV
 for key, value in temp2.items():
-    print(key, type(value))
+    print(type(value))
 
 # create file pointer and set to write mode
 fp = open(
@@ -72,27 +74,19 @@ fp = open(
     "w",
 )
 
-# write header
-fp.write("Output, Value\n")
 
-# loop through each variable and write - mulitplying floats by 1000 to correct units
+## This next section writes a CSV (only the sub JSON is parsed "output" because its a single well - we do not care about well ID)
+# writes to CSV headers
 for key, value in temp2.items():
-    # if value is a float - rescale to $ and write to new line
-    if type(value) == float:
-        fred = key + "," + str(float(value) * 1000) + "\n"
-        fp.write(fred)
-    # just prints the other values to
-    else:
-        fred = key + "," + str(value) + "\n"
-        fp.write(fred)
+    var = key + ", "
+    fp.write(var)
 
-fp.close()  # close the file pointer
+# goes to values row
+fp.write("\n")
 
+# writes to CSV values
+for key, value in temp2.items():
+    var = str(value) + ", "
+    fp.write(var)
 
-## working on doing some analytics, will need an array for that
-df = pd.json_normalize(response.json())
-df = df.transpose()
-dfNP = df.to_numpy()
-
-print("Yes")
-print("Yay")
+fp.close()  # closes the file pointer and finishes the export to main dir
