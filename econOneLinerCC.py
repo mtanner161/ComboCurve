@@ -15,9 +15,7 @@ import os
 load_dotenv()
 
 # connect to service account
-service_account = ServiceAccount.from_file(
-    ".\king\combocurve\ComboCurve\ext-api-kingoperating2dev-account-key.json\ext-api-kingoperating2dev-account-key.json"
-)
+service_account = ServiceAccount.from_file(os.getenv("API_SEC_CODE"))
 api_key = os.getenv("API_KEY_PASS")  # set API Key from enviroment variable
 # specific Python ComboCurve authentication
 combocurve_auth = ComboCurveAuth(service_account, api_key)
