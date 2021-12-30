@@ -67,12 +67,19 @@ urltwo = (
     + econId
     + "/monthly-exports/"
     + econRunId
-    + "?skip=0"
-    + "&take=200"
+    + "?take=200"
 )
 
-# same as above, parsing as JSON string
-response = requests.request("GET", urltwo, headers=auth_headers)
+has_more = True
+
+while has_more:
+    # same as above, parsing as JSON string
+    response = requests.request("GET", urltwo, headers=auth_headers)
+    urltwo = get_next_page_url(response.headers)
+    has_more = urltwo is not None
+    print(response.text)
+
+
 jsonStr = response.text
 print(len(jsonStr))
 # print(jsonStr)
@@ -93,6 +100,7 @@ totalExpenseTable = []
 netIncomeTable = []
 totalCapexTable = []
 beforeIncomeTaxCashFlowTable = []
+totalTaxTable = []
 dateTable = []
 
 # Setting row, wellId and date to correct values
@@ -111,6 +119,11 @@ for i in range(0, numEntries):
     netIncome = float(output["netIncome"])
     totalCapex = float(output["totalCapex"])
     biCashFlow = float(output["beforeIncomeTaxCashFlow"])
+    totalTaxSum = (
+        float(output["totalSeveranceTax"])
+        + float(output["adValoremTax"])
+        + float(output["totalProductionTax"])
+    )
 
     # loop to confirm new well and same date
     for j in range(i + 1, numEntries):
@@ -133,6 +146,12 @@ for i in range(0, numEntries):
             netIncome = netIncome + float(output["netIncome"])
             totalCapex = totalCapex + float(output["totalCapex"])
             biCashFlow = biCashFlow + float(output["beforeIncomeTaxCashFlow"])
+            totalTaxSum = (
+                totalTaxSum
+                + float(output["totalSeveranceTax"])
+                + float(output["adValoremTax"])
+                + float(output["totalProductionTax"])
+            )
     # counter to confirm same date
     dateCount = dateTable.count(date)
     # if dateCount is 0, then add each new summed variable to new list
@@ -147,6 +166,7 @@ for i in range(0, numEntries):
         netIncomeTable.append(netIncome)
         totalCapexTable.append(totalCapex)
         beforeIncomeTaxCashFlowTable.append(biCashFlow)
+        totalTaxTable.append(totalTaxSum)
 
 
 # Begins printing the clean CSV
@@ -166,7 +186,8 @@ headerString = (
     + "Total Expenses ($),"
     + "Net Income ($),"
     + "Total CAPEX ($),"
-    + "Before Income Tax Cash Flow ($)"
+    + "Before Income Tax Cash Flow ($),"
+    + "Total Taxes ($)"
     + "\n"
 )
 fp.write(headerString)
@@ -193,6 +214,8 @@ for i in range(0, len(dateTable)):
         + str(totalCapexTable[i])
         + ","
         + str(beforeIncomeTaxCashFlowTable[i])
+        + ","
+        + str(totalTaxTable[i])
         + "\n"
     )
     fp.write(var)

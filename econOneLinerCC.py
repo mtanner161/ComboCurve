@@ -4,6 +4,7 @@
 
 # packages needed
 from types import NoneType
+from azure.cosmos import container
 from combocurve_api_v1 import ServiceAccount, ComboCurveAuth
 import requests
 import json
@@ -66,6 +67,7 @@ jsonStr = response.text  # loads in string
 # loads JSON str into dataObj
 dataObj = json.loads(jsonStr)
 
+
 # create temp varible with dataObj
 temp = dataObj[0]
 temp2 = temp["output"]  # extract output
@@ -95,17 +97,3 @@ for key, value in temp2.items():
 fp.close()  # closes the file pointer and finishes the export to main dir
 
 print("Done")
-
-########################################## Working on passing table to s3 bucket
-########
-
-import boto3 as aws
-from botocore.config import Config
-
-
-s3 = aws.resource("s3")
-for bucket in s3.buckets.all():
-    print(bucket.name)
-
-
-print("yay")
