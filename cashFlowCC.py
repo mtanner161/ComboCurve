@@ -54,7 +54,11 @@ print(econId)  # check that varaible is passed correctly
 auth_headers = combocurve_auth.get_auth_headers()
 # Set new url parsed with updated econID
 urlone = (
-    "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios/61a93338b763c20015f3f68f/econ-runs/"
+    "https://api.combocurve.com/v1/projects/"
+    + projectId
+    + "/scenarios/"
+    + scenarioId
+    + "/econ-runs/"
     + econId
     + "/monthly-exports"
 )
@@ -73,7 +77,11 @@ auth_headers = combocurve_auth.get_auth_headers()
 # set new url with econRunID, skipping zero
 
 urltwo = (
-    "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios/61a93338b763c20015f3f68f/econ-runs/"
+    "https://api.combocurve.com/v1/projects/"
+    + projectId
+    + "/scenarios/"
+    + scenarioId
+    + "/econ-runs/"
     + econId
     + "/monthly-exports/"
     + econRunId
