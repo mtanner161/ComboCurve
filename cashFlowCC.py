@@ -23,12 +23,21 @@ api_key = os.getenv("API_KEY_PASS")  # set API Key from enviroment variable
 # specific Python ComboCurve authentication
 combocurve_auth = ComboCurveAuth(service_account, api_key)
 
+projectId = "61a92c8f34254c0013cacf3e"
+scenarioId = "61a93338b763c20015f3f68f"
+
 # This code chunk gets the Monthly Cash Flow for given Scenerio
 # Call Stack - Get Econ Id
 
 auth_headers = combocurve_auth.get_auth_headers()
 # URl econid
-url = "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios/61a93338b763c20015f3f68f/econ-runs"
+url = (
+    "https://api.combocurve.com/v1/projects/"
+    + projectId
+    + "/scenarios/"
+    + scenarioId
+    + "/econ-runs"
+)
 
 response = requests.request(
     "GET", url, headers=auth_headers
