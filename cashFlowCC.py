@@ -62,6 +62,7 @@ print(econRunId)
 # Reautenticated client
 auth_headers = combocurve_auth.get_auth_headers()
 # set new url with econRunID, skipping zero
+
 urltwo = (
     "https://api.combocurve.com/v1/projects/61a92c8f34254c0013cacf3e/scenarios/61a93338b763c20015f3f68f/econ-runs/"
     + econId
@@ -70,23 +71,24 @@ urltwo = (
     + "?take=200"
 )
 
+resultsList = []
+
+
+def process_page(response_json):
+    results = response_json["results"]
+    resultsList.extend(results)
+
+
 has_more = True
 
 while has_more:
-    # same as above, parsing as JSON string
     response = requests.request("GET", urltwo, headers=auth_headers)
     urltwo = get_next_page_url(response.headers)
+    process_page(response.json())
     has_more = urltwo is not None
-    print(response.text)
 
 
-jsonStr = response.text
-print(len(jsonStr))
-# print(jsonStr)
-dataObj = json.loads(jsonStr)
-
-dataResults = dataObj["results"]
-numEntries = len(dataResults)
+numEntries = len(resultsList)
 
 ### Working on rolling up monthly cash flow in a Res Cat Monthly Output
 
@@ -105,7 +107,7 @@ dateTable = []
 
 # Setting row, wellId and date to correct values
 for i in range(0, numEntries):
-    row = dataResults[i]
+    row = resultsList[i]
     wellId = row["well"]
     output = row["output"]
     date = row["date"]
@@ -127,7 +129,7 @@ for i in range(0, numEntries):
 
     # loop to confirm new well and same date
     for j in range(i + 1, numEntries):
-        row2 = dataResults[j]
+        row2 = resultsList[j]
         wellId2 = row2["well"]
         date2 = row2["date"]
         # check to make sure wellID ISNT the same and the date is, then calculate all date
@@ -171,7 +173,7 @@ for i in range(0, numEntries):
 
 # Begins printing the clean CSV
 fp = open(
-    r"C:\Users\MichaelTanner\Documents\code_doc\king\combocurve\ComboCurve\cashFlowRollUpTest.csv",
+    r"C:\Users\MichaelTanner\Documents\code_doc\king\combocurve\combocurve\monthlyCashFlowRollup.csv",
     "w",
 )
 
