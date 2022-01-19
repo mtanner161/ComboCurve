@@ -11,7 +11,7 @@ import smtplib
 
 # get raw CSV download from working direcotry
 rawProduction = pd.read_excel(
-    r"C:\Users\MichaelTanner\OneDrive - Sandstone Group\Clients\King Operating\Finance - Reservoir\Daily Production Data\1.11.2022greasebook.xlsx"
+    r"C:\Users\MichaelTanner\OneDrive - Sandstone Group\Clients\King Operating\Finance - Reservoir\Daily Production Data\1.19.2022greasebook.xlsx"
 )
 
 # setting the headers
@@ -85,10 +85,14 @@ cleanKellyAsset = pd.read_csv(
     r"C:\Users\MichaelTanner\Documents\code_doc\king\data\kellyAssets.csv"
 )
 
-todayDate = "1/11/2022"
+todayDate = "1/18/2022"
+yesDate = "1/17/2022"
 oilSum = 0
+oilSumYes = 0
 gasSum = 0
+gasSumYes = 0
 
+# gets todays sum
 for i in range(0, len(cleanKellyAsset)):
     if cleanKellyAsset.iloc[i, 0] == todayDate:
         gasSum = gasSum + float(cleanKellyAsset.iloc[i, 5])
@@ -96,9 +100,19 @@ for i in range(0, len(cleanKellyAsset)):
     else:
         continue
 
+for i in range(0, len(cleanKellyAsset)):
+    if cleanKellyAsset.iloc[i, 0] == yesDate:
+        gasSumYes = gasSumYes + float(cleanKellyAsset.iloc[i, 5])
+        oilSumYes = oilSumYes + float(cleanKellyAsset.iloc[i, 4])
+    else:
+        continue
 
-print(oilSum)
-print(gasSum)
+
+print(round(oilSum, 2))
+print(round(gasSum, 2))
+print(round(oilSumYes, 2))
+print(round(gasSumYes, 2))
+print(oilSum - oilSumYes)
 
 dashboardLink = "https://app.powerbi.com/view?r=eyJrIjoiM2U5OTYxOWYtOTEyMS00M2YxLWE0NTktMDFjZjcwNzlmMjg3IiwidCI6IjA1MTM5NTUzLWVlOTAtNDdhZi1iNmY3LTU0ZDk2OTc4ZTQ5ZSJ9&pageName=ReportSectionb8f3ed9f3c4313759775"
 
@@ -108,14 +122,21 @@ from mailer import Mailer
 mail = Mailer(email="operations.king@gmail.com", password="Bigshow1637%")
 
 mail.send(
-    receiver="mtanner@kingoperating.com, kduncan@kingoperating.com, pgerome@kingoperating.com",
-    subject="Daily Production Report: 1/11/2021 - ETX, STX and Gulf Coast",
-    message="Today's oil production: "
+    receiver="mtanner@kingoperating.com",
+    subject="Daily Production Report UPDATE: 1/19/2021 - ETX, STX and Gulf Coast",
+    message="Oil production: "
     + str(oilSum)
     + " bbl. \n\n"
-    + "Daily gas production: "
+    + "Gas production: "
     + str(gasSum)
-    + " mcf. \n\nView the Dashboard here: "
+    + " mcf \n\n"
+    + "Change in oil production (previous day): "
+    + str(oilSum - oilSumYes)
+    + " bbl\n\n"
+    + "Change in gas production (previous day): "
+    + str(gasSum - gasSumYes)
+    + " mcf"
+    + "\n\nView the Dashboard here (if numbers are not updated, try again in 30 min or email Michael): "
     + dashboardLink,
 )
 
